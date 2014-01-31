@@ -26,11 +26,11 @@ function start() {
 		method = request.method;
 
 		if (path != "") {
+			console.log("Path: " + path + ", Method: " + method);
 			switch (path) {
 				case commands.OAuth:
 					switch (method) {
 						case RequestTypes.POST:
-							console.log(path);
 							oAuth.getRequestAndCallHandler(request, oAuth.getToken, response);
 							break;
 						case RequestTypes.GET:
@@ -43,6 +43,15 @@ function start() {
 					}
 					break;
 				case commands.Messages:
+					switch (method) {
+						case RequestTypes.GET:
+							response.write(fs.readFileSync("./templates/" + path + ".html"));
+							response.end();
+							break;
+						default:
+							console.log("Disallowed request method for:" + path + ". Expected GET, POST, received " + method);
+							response.end();
+					}
 					break;
 				default:
 					console.log("Unknown path: " + path);
