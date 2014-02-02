@@ -2,9 +2,10 @@ var querystring = require("querystring");
 var fs = require("fs");
 var http_requests = require("./http_requests");
 var settings = require("./applicationsettings");
+// /http://mongoosejs.com/docs/index.html
 var objDb = require('mongoose');
 var Schema = objDb.Schema;
-var token = new Schema(
+var tokenSchema = new Schema(
 		{
 		  "access_token" : String,
 		  "token_type" : String,
@@ -14,6 +15,7 @@ var token = new Schema(
 		  "scope" : String
 		}
 	);
+var Token = objDb.model('Token', tokenSchema);
 
 
 
@@ -95,7 +97,13 @@ var saveTokenToDB = function(response, chunk, res) {
 	});
 	db.once('open', function callback () {
 		console.log("Connected");
-		//
+		var jsonToken = JSON.parse(chunk);
+		console.log(jsonToken.access_token);
+		var token = new Token(jsonToken);
+		token.save(function (err) {
+  			if (err) // TODO handle the error
+			  	console.log(err);
+			});
 		writeResponse(response, chunk);
 	});
 
