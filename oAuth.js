@@ -2,6 +2,9 @@ var querystring = require("querystring");
 var fs = require("fs");
 var http_requests = require("./http_requests");
 var settings = require("./applicationsettings");
+var objDb = require('mongoose');
+
+
 var requestTypes = settings.RequestTypes;
 //var platformURL =	settings.platformURL;
 var credentials =	settings.credentials;
@@ -46,19 +49,25 @@ var oAuthResponseHandler = function (res, response) {
 	console.log(res.statusCode);
 	res.setEncoding('utf8');
 	res.on('data', function (chunk) {
-		response.write(fs.readFileSync("./templates/commonlinks.txt"));
-		response.write("<textarea cols=\"180\" rows=\"20\">");
-		response.write(chunk);
-		response.write("</textarea>");
+		if (res.statusCode == 200) {
+			//saveTokenToDB(response, chunk);
+			response.write(fs.readFileSync("./templates/commonlinks.txt"));
+			response.write("<textarea cols=\"180\" rows=\"20\">");
+			response.write(chunk);
+			response.write("</textarea>");
+		} else {
+			response.write("Failed. Response Status: " + res.statusCode);
+		}
+
 	});
 	
 	res.on('close', function() {
-		console.log("request close");
+		console.log("oAuth: request close");
 		response.end();
 	});
 	
 	res.on('end', function() {
-		console.log("request end");
+		console.log("oAuth: request end");
 		response.end();
 	});
 }
@@ -77,6 +86,26 @@ var getRequestAndCallHandler = function(req, callback, response) {
 		console.log("POST Data: " + postData);
 	    callback(postData, params, response);
 	});
+}
+
+var saveTokenToDB = function(response, chunk) {
+	objDb.connect('mongodb://tikhon76:lprc2711@widmore.mongohq.com:10010/PlatformTester');
+	var db = objDb.connection;
+	db.on('error', function callback () {
+		console.log("connection error");
+		writeResponse(response, chunk);
+	});
+	db.once('open', function callback () {
+		console.log("Connected");
+		writeResponse(response, chunk);
+	});
+}
+
+var writeResponse = function(response, chunk) {
+	response.write(fs.readFileSync("./templates/commonlinks.txt"));
+	response.write("<textarea cols=\"180\" rows=\"20\">");
+	response.write(chunk);
+	response.write("</textarea>");
 }
 
 exports.oAuthObject = oAuthObject;
