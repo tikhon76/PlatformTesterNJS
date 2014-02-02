@@ -39,6 +39,16 @@ function parseCookies(request) {
     return list;
 }
 
+/*
+
+  // To Write a Cookie
+  response.writeHead(200, {
+    'Set-Cookie': 'mycookie=test',
+    'Content-Type': 'text/plain'
+  });
+
+*/
+
 exports.get = get;
 exports.post = post;
 exports.RequestTypes = RequestTypes;
