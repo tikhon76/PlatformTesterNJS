@@ -50,25 +50,11 @@ var oAuthResponseHandler = function (res, response) {
 	res.setEncoding('utf8');
 	res.on('data', function (chunk) {
 		if (res.statusCode == 200) {
-			//saveTokenToDB(response, chunk);
-			response.write(fs.readFileSync("./templates/commonlinks.txt"));
-			response.write("<textarea cols=\"180\" rows=\"20\">");
-			response.write(chunk);
-			response.write("</textarea>");
+			saveTokenToDB(response, chunk, res);
 		} else {
 			response.write("Failed. Response Status: " + res.statusCode);
 		}
 
-	});
-	
-	res.on('close', function() {
-		console.log("oAuth: request close");
-		response.end();
-	});
-	
-	res.on('end', function() {
-		console.log("oAuth: request end");
-		response.end();
 	});
 }
 
@@ -88,7 +74,7 @@ var getRequestAndCallHandler = function(req, callback, response) {
 	});
 }
 
-var saveTokenToDB = function(response, chunk) {
+var saveTokenToDB = function(response, chunk, res) {
 	objDb.connect('mongodb://tikhon76:lprc2711@widmore.mongohq.com:10010/PlatformTester');
 	var db = objDb.connection;
 	db.on('error', function callback () {
@@ -99,6 +85,7 @@ var saveTokenToDB = function(response, chunk) {
 		console.log("Connected");
 		writeResponse(response, chunk);
 	});
+
 }
 
 var writeResponse = function(response, chunk) {
@@ -106,6 +93,7 @@ var writeResponse = function(response, chunk) {
 	response.write("<textarea cols=\"180\" rows=\"20\">");
 	response.write(chunk);
 	response.write("</textarea>");
+	response.end();
 }
 
 exports.oAuthObject = oAuthObject;
