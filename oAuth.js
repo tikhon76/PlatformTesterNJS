@@ -3,6 +3,18 @@ var fs = require("fs");
 var http_requests = require("./http_requests");
 var settings = require("./applicationsettings");
 var objDb = require('mongoose');
+var Schema = objDb.Schema;
+var token = new Schema(
+		{
+		  "access_token" : String,
+		  "token_type" : String,
+		  "expires_in" : Number,
+		  "refresh_token" : String,
+		  "refresh_token_expires_in" : Number,
+		  "scope" : String
+		}
+	);
+
 
 
 var requestTypes = settings.RequestTypes;
@@ -83,6 +95,7 @@ var saveTokenToDB = function(response, chunk, res) {
 	});
 	db.once('open', function callback () {
 		console.log("Connected");
+		//
 		writeResponse(response, chunk);
 	});
 
