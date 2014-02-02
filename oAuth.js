@@ -103,8 +103,8 @@ var saveTokenToDB = function(response, chunk, res) {
   			if (err) {
   				console.log(err);
   			}
+  			writeResponse(response, chunk);
 		});
-		writeResponse(response, chunk);
 	});
 
 }

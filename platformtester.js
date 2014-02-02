@@ -24,6 +24,7 @@ function start() {
 		response.writeHead(200, {"Content-Type": "text/html"});
 		path = parsedUrl.pathname.substring(1);
 		method = request.method;
+		//console.log(http_requests.parseCookies(request));
 
 		if (path != "") {
 			console.log("Path: " + path + ", Method: " + method);
