@@ -66,9 +66,8 @@ var oAuthResponseHandler = function (res, response) {
 		if (res.statusCode == 200) {
 			saveTokenToDB(response, chunk, res);
 		} else {
-			response.write("Failed. Response Status: " + res.statusCode);
+			writeResponse(response, chunk);
 		}
-
 	});
 }
 
@@ -101,9 +100,10 @@ var saveTokenToDB = function(response, chunk, res) {
 		console.log(jsonToken.access_token);
 		var token = new Token(jsonToken);
 		token.save(function (err) {
-  			if (err) // TODO handle the error
-			  	console.log(err);
-			});
+  			if (err) {
+  				console.log(err);
+  			}
+		});
 		writeResponse(response, chunk);
 	});
 
