@@ -16,10 +16,10 @@ function get(params, responseHandler) {
 	req.end();
 }
 
-function post(params, responseHandler, postData, response) {
+function post(params, responseHandler, postData, response, session_id) {
 	console.log("POST Request: " + postData);
 	var req = http.request(params, function(res) {
-		responseHandler(res, response);
+		responseHandler(res, response, session_id);
 	});
 	
 	// post the data
@@ -46,6 +46,11 @@ function parseCookies(request) {
     'Set-Cookie': 'mycookie=test',
     'Content-Type': 'text/plain'
   });
+
+
+response.writeHead(200, {
+    'Set-Cookie':'cookieName=cookieValue; expires='+new Date(new Date().getTime()+86409000).toUTCString();
+});
 
 */
 

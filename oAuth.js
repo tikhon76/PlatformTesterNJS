@@ -7,6 +7,7 @@ var objDb = require('mongoose');
 var Schema = objDb.Schema;
 var tokenSchema = new Schema(
 		{
+		  "session_id" : "",
 		  "access_token" : String,
 		  "token_type" : String,
 		  "expires_in" : Number,
@@ -35,7 +36,7 @@ var params = {
 	method: requestTypes
 };
 
-function getToken(postData, params, response) {
+function getToken(postData, params, response, session_id) {
 	console.log("getToken");
 	
 	var authdata = {
@@ -54,17 +55,17 @@ function getToken(postData, params, response) {
 		'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
 		'Content-Length': post_data.length
 	};
-	http_requests.post(params, oAuthResponseHandler, post_data, response);
+	http_requests.post(params, oAuthResponseHandler, post_data, response, session_id);
 }
 
-var oAuthResponseHandler = function (res, response) {
+var oAuthResponseHandler = function (res, response, session_id) {
 	//console.log('STATUS: ' + res.statusCode);
 	//console.log('HEADERS: ' + JSON.stringify(res.headers));
 	console.log(res.statusCode);
 	res.setEncoding('utf8');
 	res.on('data', function (chunk) {
 		if (res.statusCode == 200) {
-			saveTokenToDB(response, chunk, res);
+			saveTokenToDB(response, chunk, res, session_id);
 		} else {
 			writeResponse(response, chunk);
 		}
@@ -72,7 +73,7 @@ var oAuthResponseHandler = function (res, response) {
 }
 
 
-var getRequestAndCallHandler = function(req, callback, response) {
+var getRequestAndCallHandler = function(req, response, callback, session_id) {
        		
 	var body = '';
         	
@@ -83,11 +84,11 @@ var getRequestAndCallHandler = function(req, callback, response) {
 	req.on('end', function () {
 		var postData = querystring.parse(body);
 		console.log("POST Data: " + postData);
-	    callback(postData, params, response);
+	    callback(postData, params, response, session_id);
 	});
 }
 
-var saveTokenToDB = function(response, chunk, res) {
+var saveTokenToDB = function(response, chunk, res, session_id) {
 	objDb.connect('mongodb://tikhon76:lprc2711@widmore.mongohq.com:10010/PlatformTester');
 	var db = objDb.connection;
 	db.on('error', function callback () {
@@ -97,7 +98,8 @@ var saveTokenToDB = function(response, chunk, res) {
 	db.once('open', function callback () {
 		console.log("Connected");
 		var jsonToken = JSON.parse(chunk);
-		console.log(jsonToken.access_token);
+		jsonToken.session_id = session_id;
+		console.log("Token: " + jsonToken.access_token);
 		var token = new Token(jsonToken);
 		token.save(function (err) {
   			if (err) {

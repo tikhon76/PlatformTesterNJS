@@ -5,6 +5,7 @@ var http_requests = require("./http_requests");
 var router = require("./router");
 var oAuth = require("./oAuth");
 var fs = require("fs");
+var sessions = require("./sessions");
 
 var tokens = {
 	"access_token" : "",
@@ -12,19 +13,36 @@ var tokens = {
 }
 
 
-var commands = router.commands;
-var RequestTypes =	http_requests.RequestTypes;
-var path = "";
-var method = "";
+
 
 
 function start() {
 	function onRequest(request, response) {
+
+		var sessionID = "";
+		var commands = router.commands;
+		var RequestTypes =	http_requests.RequestTypes;
+		var path = "";
+		var method = "";
 		var parsedUrl = url.parse(request.url);
-		response.writeHead(200, {"Content-Type": "text/html"});
+		var cookeis = http_requests.parseCookies(request);
+		if (cookeis.sessionID == "" || cookeis.sessionID == null) {
+			sessionID = sessions.generateSessionID();
+		} else {
+			sessionID = cookeis.sessionID;
+		}
+		console.log("Cookies:");
+		console.log(cookeis);
+
+		response.writeHead(200, 
+			{
+				'Set-Cookie': 'sessionID=' + sessionID,
+				"Content-Type": "text/html"
+			}
+		);
 		path = parsedUrl.pathname.substring(1);
 		method = request.method;
-		//console.log(http_requests.parseCookies(request));
+		
 
 		if (path != "") {
 			console.log("Path: " + path + ", Method: " + method);
@@ -32,7 +50,7 @@ function start() {
 				case commands.OAuth:
 					switch (method) {
 						case RequestTypes.POST:
-							oAuth.getRequestAndCallHandler(request, oAuth.getToken, response);
+							oAuth.getRequestAndCallHandler(request, response, oAuth.getToken, sessionID);
 							break;
 						case RequestTypes.GET:
 							response.write(fs.readFileSync("./templates/" + path + ".html"));
@@ -73,10 +91,46 @@ function start() {
 	}
 
 	http.createServer(onRequest).listen(2000);
+	setInterval(someJob, 60000);
 	console.log("Server started at port 2000");
 }
 
+function someJob() {
+	console.log("Some Job: " + getFormattedTime());
+}
 
+function getFormattedTime() {
+	var currentDate = new Date();
+	var strDate = currentDate.getUTCFullYear();
+	strDate += "-" + addZero(currentDate.getUTCMonth() + 1);
+	strDate += "-" + addZero(currentDate.getUTCDate());
+	strDate += " " + addZero(currentDate.getUTCHours());
+	strDate += ":" + addZero(currentDate.getUTCMinutes());
+	strDate += ":" + addZero(currentDate.getUTCSeconds());
+	strDate += "." + addZero2(currentDate.getUTCMilliseconds());
+	return strDate;
+}
+
+function addZero(str) {
+	str = str.toString();
+	if (str.length == 1) {
+		return "0" + str;
+	}
+	return str;
+}
+
+function addZero2(str) {
+	str = str.toString();
+	if (str.length == 1) {
+		return "00" + str;
+	}
+
+	if (str.length == 2) {
+		return "0" + str;
+	}
+
+	return str;
+}
 
 exports.start = start;
 
