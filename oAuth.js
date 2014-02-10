@@ -7,7 +7,7 @@ var objDb = require('mongoose');
 var Schema = objDb.Schema;
 var tokenSchema = new Schema(
 		{
-		  "session_id" : "",
+		  "session_id" : String,
 		  "access_token" : String,
 		  "token_type" : String,
 		  "expires_in" : Number,

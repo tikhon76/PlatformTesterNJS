@@ -6,6 +6,7 @@ var router = require("./router");
 var oAuth = require("./oAuth");
 var fs = require("fs");
 var sessions = require("./sessions");
+var common = require("./common");
 
 var tokens = {
 	"access_token" : "",
@@ -31,8 +32,7 @@ function start() {
 		} else {
 			sessionID = cookeis.sessionID;
 		}
-		console.log("Cookies:");
-		console.log(cookeis);
+		console.log("Cookies:" + JSON.stringify(cookeis));
 
 		response.writeHead(200, 
 			{
@@ -96,57 +96,10 @@ function start() {
 }
 
 function someJob() {
-	console.log("Some Job: " + getFormattedTime());
-}
-
-function getFormattedTime() {
-	var currentDate = new Date();
-	var strDate = currentDate.getUTCFullYear();
-	strDate += "-" + addZero(currentDate.getUTCMonth() + 1);
-	strDate += "-" + addZero(currentDate.getUTCDate());
-	strDate += " " + addZero(currentDate.getUTCHours());
-	strDate += ":" + addZero(currentDate.getUTCMinutes());
-	strDate += ":" + addZero(currentDate.getUTCSeconds());
-	strDate += "." + addZero2(currentDate.getUTCMilliseconds());
-	return strDate;
-}
-
-function addZero(str) {
-	str = str.toString();
-	if (str.length == 1) {
-		return "0" + str;
-	}
-	return str;
-}
-
-function addZero2(str) {
-	str = str.toString();
-	if (str.length == 1) {
-		return "00" + str;
-	}
-
-	if (str.length == 2) {
-		return "0" + str;
-	}
-
-	return str;
+	console.log("Some Job: " + common.getFormattedTime());
 }
 
 exports.start = start;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
