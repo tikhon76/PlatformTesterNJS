@@ -32,6 +32,7 @@ function start() {
 		} else {
 			sessionID = cookeis.sessionID;
 		}
+		
 		console.log("Cookies:" + JSON.stringify(cookeis));
 
 		response.writeHead(200, 

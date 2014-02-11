@@ -2,21 +2,7 @@ var querystring = require("querystring");
 var fs = require("fs");
 var http_requests = require("./http_requests");
 var settings = require("./applicationsettings");
-// /http://mongoosejs.com/docs/index.html
-var objDb = require('mongoose');
-var Schema = objDb.Schema;
-var tokenSchema = new Schema(
-		{
-		  "session_id" : String,
-		  "access_token" : String,
-		  "token_type" : String,
-		  "expires_in" : Number,
-		  "refresh_token" : String,
-		  "refresh_token_expires_in" : Number,
-		  "scope" : String
-		}
-	);
-var Token = objDb.model('Token', tokenSchema);
+var objDB = require("./objdb");
 
 
 
@@ -65,7 +51,7 @@ var oAuthResponseHandler = function (res, response, session_id) {
 	res.setEncoding('utf8');
 	res.on('data', function (chunk) {
 		if (res.statusCode == 200) {
-			saveTokenToDB(response, chunk, res, session_id);
+			objDB.saveTokenToDB(response, chunk, res, session_id, writeResponse);
 		} else {
 			writeResponse(response, chunk);
 		}
@@ -86,29 +72,6 @@ var getRequestAndCallHandler = function(req, response, callback, session_id) {
 		console.log("POST Data: " + postData);
 	    callback(postData, params, response, session_id);
 	});
-}
-
-var saveTokenToDB = function(response, chunk, res, session_id) {
-	objDb.connect('mongodb://tikhon76:lprc2711@widmore.mongohq.com:10010/PlatformTester');
-	var db = objDb.connection;
-	db.on('error', function callback () {
-		console.log("connection error");
-		writeResponse(response, chunk);
-	});
-	db.once('open', function callback () {
-		console.log("Connected");
-		var jsonToken = JSON.parse(chunk);
-		jsonToken.session_id = session_id;
-		console.log("Token: " + jsonToken.access_token);
-		var token = new Token(jsonToken);
-		token.save(function (err) {
-  			if (err) {
-  				console.log(err);
-  			}
-  			writeResponse(response, chunk);
-		});
-	});
-
 }
 
 var writeResponse = function(response, chunk) {
