@@ -49,11 +49,11 @@ var oAuthResponseHandler = function (res, response, session_id) {
 	//console.log('HEADERS: ' + JSON.stringify(res.headers));
 	console.log(res.statusCode);
 	res.setEncoding('utf8');
-	res.on('data', function (chunk) {
+	res.on('data', function (responseText) {
 		if (res.statusCode == 200) {
-			objDB.saveTokenToDB(response, chunk, res, session_id, writeResponse);
+			objDB.saveTokenToDB(response, responseText, res, session_id, writeResponse);
 		} else {
-			writeResponse(response, chunk);
+			writeResponse(response, responseText);
 		}
 	});
 }

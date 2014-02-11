@@ -1,7 +1,29 @@
 // /http://mongoosejs.com/docs/index.html
 var objDb = require('mongoose');
-
 var Schema = objDb.Schema;
+
+
+
+// Session related data
+var sessionSchema = new Schema(
+		{
+			"session_id" : String,
+			"created" : Number,
+			"last_activity" : Number
+		}
+	);
+var Session = objDb.model('Session', sessionSchema);
+
+var saveSessionToDB = function() {
+	
+}
+
+
+
+
+
+
+// Token related code
 var tokenSchema = new Schema(
 		{
 		  "session_id" : String,
@@ -17,17 +39,16 @@ var tokenSchema = new Schema(
 	);
 var Token = objDb.model('Token', tokenSchema);
 
-var saveTokenToDB = function(response, chunk, res, session_id, callback) {
+var saveTokenToDB = function(response, responseText, res, session_id, callback) {
 	objDb.connect('mongodb://tikhon76:lprc2711@widmore.mongohq.com:10010/PlatformTester');
 	var db = objDb.connection;
 	db.on('error', function callback () {
 		console.log("connection error");
-		callback(response, chunk);
-		//writeResponse(response, chunk);
+		callback(response, responseText);
 	});
 	db.once('open', function openCallBack () {
 		console.log("Mongo Connected");
-		var jsonToken = JSON.parse(chunk);
+		var jsonToken = JSON.parse(responseText);
 		var currDate = (new Date()).getTime();
 		jsonToken.session_id = session_id;
 		jsonToken.access_token_expires = currDate + jsonToken.expires_in * 1000;
@@ -37,11 +58,12 @@ var saveTokenToDB = function(response, chunk, res, session_id, callback) {
   			if (err) {
   				console.log(err);
   			}
-  			callback(response, chunk);
-  			//writeResponse(response, chunk);
+  			callback(response, responseText);
 		});
 	});
 }
 
 
+
+// Exports
 exports.saveTokenToDB = saveTokenToDB;
