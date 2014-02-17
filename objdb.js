@@ -7,8 +7,8 @@ var Schema = objDb.Schema;
 // Session related data
 var sessionSchema = new Schema(
 		{
+			"timestamp" : Number,
 			"session_id" : String,
-			"created" : Number,
 			"last_activity" : Number
 		}
 	);
@@ -20,12 +20,10 @@ var saveSessionToDB = function() {
 
 
 
-
-
-
 // Token related code
 var tokenSchema = new Schema(
 		{
+		  "timestamp" : Number,
 		  "session_id" : String,
 		  "access_token" : String,
 		  "token_type" : String,
@@ -50,6 +48,7 @@ var saveTokenToDB = function(response, responseText, res, session_id, callback) 
 		console.log("Mongo Connected");
 		var jsonToken = JSON.parse(responseText);
 		var currDate = (new Date()).getTime();
+		jsonToken.timestamp = currDate;
 		jsonToken.session_id = session_id;
 		jsonToken.access_token_expires = currDate + jsonToken.expires_in * 1000;
 		jsonToken.refresh_token_expires = currDate + jsonToken.refresh_token_expires_in * 1000;
