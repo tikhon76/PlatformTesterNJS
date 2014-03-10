@@ -8,7 +8,7 @@ var applicationSecret = "XUCBNtu2-HVdQIFrWZQUZF1AgXXY9OBvXUCBitrTGG9dQIGUV3PsAl1
 
 var platformURL = {
 	hostname:  '',
-	port: '80',
+	port: '',
 	url: function (){
 		return this.hostname + ':' + this.port;
 	}

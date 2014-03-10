@@ -33,6 +33,7 @@ function getToken(postData, params, response, session_id) {
 	};
 
 	params.hostname = postData.hostname;
+	params.port = postData.port;
 	var post_data = querystring.stringify(authdata);
 	params.path = oAuthObject.path;
 	params.method = oAuthObject.method;
