@@ -64,6 +64,9 @@ function start() {
 					break;
 				case commands.Messages:
 					switch (method) {
+						case RequestTypes.POST:
+						
+						break;
 						case RequestTypes.GET:
 							response.write(fs.readFileSync("./templates/" + path + ".html"));
 							response.end();
