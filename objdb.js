@@ -1,4 +1,6 @@
 // /http://mongoosejs.com/docs/index.html
+// http://docs.mongodb.org/manual/reference/operator/query/gt/#op._S_gt
+// db.tokens.find({session_id : "8e64d4f050fa60d0e3e39f3c52660ca38430e7c5caccd6e02dda84acddaf3f00"})
 var objDb = require('mongoose');
 var Schema = objDb.Schema;
 

@@ -65,7 +65,7 @@ function start() {
 				case commands.Messages:
 					switch (method) {
 						case RequestTypes.POST:
-						
+						response.end("Not Implemented");
 						break;
 						case RequestTypes.GET:
 							response.write(fs.readFileSync("./templates/" + path + ".html"));
